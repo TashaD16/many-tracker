@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -6,7 +6,7 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Badge } from '../components/ui/badge';
 import { transactionsService, accountsService, categoriesService } from '../services/supabaseService';
 import { useSupabaseAuth } from '../context/SupabaseAuthContext';
@@ -40,6 +40,29 @@ const Transactions = () => {
     tags: []
   });
 
+  const fetchTransactions = useCallback(async () => {
+    try {
+      const filterParams = {};
+      if (filters.startDate) filterParams.startDate = filters.startDate;
+      if (filters.endDate) filterParams.endDate = filters.endDate;
+      if (filters.type) filterParams.type = filters.type;
+      if (filters.categoryId) filterParams.categoryId = filters.categoryId;
+      if (filters.accountId) filterParams.accountId = filters.accountId;
+
+      const data = await transactionsService.getAll(filterParams);
+      
+      const sorted = [...data].sort((a, b) => {
+        const aVal = filters.sortBy === 'date' ? new Date(a.date) : a.amount;
+        const bVal = filters.sortBy === 'date' ? new Date(b.date) : b.amount;
+        return filters.sortOrder === 'desc' ? bVal - aVal : aVal - bVal;
+      });
+      
+      setTransactions(sorted);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  }, [filters]);
+
   useEffect(() => {
     if (user) {
       fetchTransactions();
@@ -61,30 +84,8 @@ const Transactions = () => {
         subscription.unsubscribe();
       };
     }
-  }, [filters, user]);
-
-  const fetchTransactions = async () => {
-    try {
-      const filterParams = {};
-      if (filters.startDate) filterParams.startDate = filters.startDate;
-      if (filters.endDate) filterParams.endDate = filters.endDate;
-      if (filters.type) filterParams.type = filters.type;
-      if (filters.categoryId) filterParams.categoryId = filters.categoryId;
-      if (filters.accountId) filterParams.accountId = filters.accountId;
-
-      const data = await transactionsService.getAll(filterParams);
-      
-      const sorted = [...data].sort((a, b) => {
-        const aVal = filters.sortBy === 'date' ? new Date(a.date) : a.amount;
-        const bVal = filters.sortBy === 'date' ? new Date(b.date) : b.amount;
-        return filters.sortOrder === 'desc' ? bVal - aVal : aVal - bVal;
-      });
-      
-      setTransactions(sorted);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-    }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, filters]);
 
   const fetchAccounts = async () => {
     try {
