@@ -6,10 +6,19 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || process.env.VITE_SUPAB
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase URL or Anon Key is missing. Please set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env');
+  console.error('Supabase URL or Anon Key is missing!');
+  console.error('Please set REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY in .env file');
+  console.error('Current values:', {
+    url: supabaseUrl ? '✓ Set' : '✗ Missing',
+    key: supabaseAnonKey ? '✓ Set' : '✗ Missing'
+  });
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Create client with fallback empty strings to prevent initialization errors
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-key',
+  {
   auth: {
     persistSession: true,
     autoRefreshToken: true,

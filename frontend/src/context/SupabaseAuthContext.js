@@ -18,24 +18,49 @@ export const SupabaseAuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) {
-        setUser(session.user);
-        loadUserProfile(session.user.id);
-      }
-      setLoading(false);
-    });
+    let mounted = true;
+
+    // Get initial session with error handling
+    supabase.auth.getSession()
+      .then(({ data: { session }, error }) => {
+        if (!mounted) return;
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          setLoading(false);
+          return;
+        }
+
+        setSession(session);
+        if (session) {
+          setUser(session.user);
+          // Load profile but don't wait for it to finish
+          loadUserProfile(session.user.id).catch(err => {
+            console.error('Error loading profile:', err);
+          });
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Failed to get session:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      });
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+
       setSession(session);
       if (session) {
         setUser(session.user);
-        await loadUserProfile(session.user.id);
+        // Load profile but don't block on it
+        loadUserProfile(session.user.id).catch(err => {
+          console.error('Error loading profile:', err);
+        });
       } else {
         setUser(null);
         setProfile(null);
@@ -43,7 +68,10 @@ export const SupabaseAuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const loadUserProfile = async (userId) => {
