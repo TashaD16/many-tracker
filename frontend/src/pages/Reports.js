@@ -12,7 +12,7 @@ const Reports = () => {
   const [filters, setFilters] = useState({
     startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
     endDate: new Date().toISOString().split('T')[0],
-    type: '',
+    type: 'all',
     format: 'csv'
   });
 
@@ -23,7 +23,7 @@ const Reports = () => {
           startDate: filters.startDate,
           endDate: filters.endDate
         };
-        if (filters.type) params.type = filters.type;
+        if (filters.type && filters.type !== 'all') params.type = filters.type;
 
         const response = await axios.get(`/api/reports/export/${format}`, {
           params,
@@ -41,7 +41,7 @@ const Reports = () => {
         const transactions = await transactionsService.getAll({
           startDate: filters.startDate,
           endDate: filters.endDate,
-          type: filters.type || undefined
+          type: filters.type && filters.type !== 'all' ? filters.type : undefined
         });
 
         const dataStr = JSON.stringify(transactions, null, 2);
@@ -93,7 +93,7 @@ const Reports = () => {
                   <SelectValue placeholder="All" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   <SelectItem value="income">Income</SelectItem>
                   <SelectItem value="expense">Expense</SelectItem>
                 </SelectContent>

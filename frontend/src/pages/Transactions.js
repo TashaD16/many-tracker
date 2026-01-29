@@ -24,9 +24,9 @@ const Transactions = () => {
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
-    type: '',
-    categoryId: '',
-    accountId: '',
+    type: 'all',
+    categoryId: 'all',
+    accountId: 'all',
     sortBy: 'date',
     sortOrder: 'desc'
   });
@@ -45,9 +45,9 @@ const Transactions = () => {
       const filterParams = {};
       if (filters.startDate) filterParams.startDate = filters.startDate;
       if (filters.endDate) filterParams.endDate = filters.endDate;
-      if (filters.type) filterParams.type = filters.type;
-      if (filters.categoryId) filterParams.categoryId = filters.categoryId;
-      if (filters.accountId) filterParams.accountId = filters.accountId;
+      if (filters.type && filters.type !== 'all') filterParams.type = filters.type;
+      if (filters.categoryId && filters.categoryId !== 'all') filterParams.categoryId = filters.categoryId;
+      if (filters.accountId && filters.accountId !== 'all') filterParams.accountId = filters.accountId;
 
       const data = await transactionsService.getAll(filterParams);
       
@@ -225,7 +225,7 @@ const Transactions = () => {
                   <SelectValue placeholder="All" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   <SelectItem value="income">Income</SelectItem>
                   <SelectItem value="expense">Expense</SelectItem>
                 </SelectContent>
@@ -238,7 +238,7 @@ const Transactions = () => {
                   <SelectValue placeholder="All" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   {categories.map((cat) => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
@@ -254,7 +254,7 @@ const Transactions = () => {
                   <SelectValue placeholder="All" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   {accounts.map((acc) => (
                     <SelectItem key={acc.id} value={acc.id}>
                       {acc.name}
@@ -268,9 +268,9 @@ const Transactions = () => {
             <Button variant="outline" onClick={() => setFilters({
               startDate: '',
               endDate: '',
-              type: '',
-              categoryId: '',
-              accountId: '',
+              type: 'all',
+              categoryId: 'all',
+              accountId: 'all',
               sortBy: 'date',
               sortOrder: 'desc'
             })}>
