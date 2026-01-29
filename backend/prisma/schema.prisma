@@ -1,0 +1,139 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id // UUID from Supabase Auth
+  email     String   @unique
+  password  String   // Not used with Supabase Auth, kept for compatibility
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts      Account[]
+  categories    Category[]
+  transactions  Transaction[]
+  transfers     Transfer[] @relation("FromUser")
+  transfersTo   Transfer[] @relation("ToUser")
+  budgets       Budget[]
+}
+
+model Account {
+  id            String   @id @default(cuid())
+  userId        String
+  name          String
+  type          String   // cash, card, savings, etc.
+  initialBalance Float   @default(0)
+  currentBalance Float   @default(0)
+  currency      String   @default("BYN") // BYN, USD, EUR, RUB
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  transfersFrom Transfer[]  @relation("FromAccount")
+  transfersTo  Transfer[]   @relation("ToAccount")
+
+  @@index([userId])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  type        String   // income, expense
+  icon        String?
+  color       String?  @default("#2196F3")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets     Budget[]
+
+  @@index([userId])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  accountId   String
+  categoryId  String
+  amount      Float
+  type        String   // income, expense
+  date        DateTime @default(now())
+  description String?
+  tags        String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([date])
+  @@index([type])
+  @@index([categoryId])
+}
+
+model Transfer {
+  id            String   @id @default(cuid())
+  fromUserId    String
+  toUserId      String
+  fromAccountId String
+  toAccountId   String
+  amount        Float
+  exchangeRate  Float?   // If currencies differ
+  date          DateTime @default(now())
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  fromUser    User    @relation("FromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser      User    @relation("ToUser", fields: [toUserId], references: [id], onDelete: Cascade)
+  fromAccount Account @relation("FromAccount", fields: [fromAccountId], references: [id], onDelete: Cascade)
+  toAccount   Account @relation("ToAccount", fields: [toAccountId], references: [id], onDelete: Cascade)
+
+  @@index([fromUserId])
+  @@index([date])
+}
+
+model Budget {
+  id          String   @id @default(cuid())
+  userId      String
+  categoryId  String
+  period      String   // month, quarter, year
+  periodStart DateTime
+  periodEnd   DateTime
+  limit       Float
+  spent       Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model CurrencyRate {
+  id        String   @id @default(cuid())
+  fromCurrency String
+  toCurrency   String
+  rate        Float
+  source      String  @default("myfin.by")
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@unique([fromCurrency, toCurrency, source])
+  @@index([fromCurrency, toCurrency])
+}
