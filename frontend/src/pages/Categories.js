@@ -5,7 +5,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Card, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { categoriesService } from '../services/supabaseService';
 import { useSupabaseAuth } from '../context/SupabaseAuthContext';
 
@@ -160,6 +160,9 @@ const Categories = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit Category' : 'Add Category'}</DialogTitle>
+            <DialogDescription>
+              {editing ? 'Update category details' : 'Create a new category for organizing transactions'}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">

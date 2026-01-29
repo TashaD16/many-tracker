@@ -5,7 +5,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Progress } from '../components/ui/progress';
 import { budgetsService, categoriesService } from '../services/supabaseService';
 import { useSupabaseAuth } from '../context/SupabaseAuthContext';
@@ -181,6 +181,9 @@ const Budgets = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit Budget' : 'Add Budget'}</DialogTitle>
+            <DialogDescription>
+              {editing ? 'Update budget limit and period' : 'Set a spending limit for a category'}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">

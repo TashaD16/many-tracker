@@ -5,7 +5,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { accountsService } from '../services/supabaseService';
 import { useSupabaseAuth } from '../context/SupabaseAuthContext';
 
@@ -132,6 +132,9 @@ const Accounts = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit Account' : 'Add Account'}</DialogTitle>
+            <DialogDescription>
+              {editing ? 'Update account details' : 'Add a new account to track your finances'}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">

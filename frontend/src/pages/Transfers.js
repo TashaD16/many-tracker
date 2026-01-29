@@ -6,7 +6,7 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Card, CardContent } from '../components/ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { transfersService, accountsService } from '../services/supabaseService';
 import { useSupabaseAuth } from '../context/SupabaseAuthContext';
@@ -173,6 +173,9 @@ const Transfers = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>New Transfer</DialogTitle>
+            <DialogDescription>
+              Transfer funds between your accounts
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (

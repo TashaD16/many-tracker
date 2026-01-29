@@ -6,7 +6,7 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Badge } from '../components/ui/badge';
 import { transactionsService, accountsService, categoriesService } from '../services/supabaseService';
 import { useSupabaseAuth } from '../context/SupabaseAuthContext';
@@ -333,6 +333,9 @@ const Transactions = () => {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
+            <DialogDescription>
+              {editing ? 'Update transaction details' : 'Add a new income or expense transaction'}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -418,6 +421,9 @@ const Transactions = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Transaction Details</DialogTitle>
+            <DialogDescription>
+              View detailed information about this transaction
+            </DialogDescription>
           </DialogHeader>
           {selectedTransaction && (
             <div className="space-y-4">
